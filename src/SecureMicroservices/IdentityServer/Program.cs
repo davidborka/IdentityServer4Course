@@ -7,10 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddIdentityServer()
 	.AddInMemoryClients(IdentityServer.Config.Clients)
-	.AddInMemoryIdentityResources(IdentityServer.Config.IdentityResources)
-	.AddInMemoryApiResources(IdentityServer.Config.ApiResources)
 	.AddInMemoryApiScopes(IdentityServer.Config.ApiScopes)
-	.AddTestUsers(IdentityServer.Config.TestUsers)
 	.AddDeveloperSigningCredential();
 
 var app = builder.Build();
