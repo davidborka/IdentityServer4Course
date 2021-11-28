@@ -1,13 +1,30 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.EntityFrameworkCore;
 using Movies.Client.ApiServices;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllersWithViews();
+builder.Services.AddAuthentication(options =>
+{
+	options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+	options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+})
+.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+.AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options => {
+	options.Authority = "https://localhost:5005";
+	options.ClientId = "movies_mvc_client";
+	options.ClientSecret = "secret";
+	options.ResponseType = "code";
+	options.Scope.Add("openid");
+	options.Scope.Add("profile");
+	options.SaveTokens = true;
+	options.GetClaimsFromUserInfoEndpoint = true;
 
+});
 builder.Services.AddTransient<IMovieApiService, MovieService>();
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -22,9 +39,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllerRoute(
 	name: "default",
 	pattern: "{controller=Home}/{action=Index}/{id?}");
