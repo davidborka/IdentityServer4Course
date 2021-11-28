@@ -4,10 +4,12 @@ using IdentityServer4.Test;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorPages();
+builder.Services.AddControllersWithViews();
 builder.Services.AddIdentityServer()
 	.AddInMemoryClients(IdentityServer.Config.Clients)
 	.AddInMemoryApiScopes(IdentityServer.Config.ApiScopes)
+	.AddInMemoryIdentityResources(IdentityServer.Config.IdentityResources)
+	.AddTestUsers(IdentityServer.Config.TestUsers)
 	.AddDeveloperSigningCredential();
 
 var app = builder.Build();
@@ -26,7 +28,6 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseIdentityServer();
-
-app.MapRazorPages();
-
+app.UseAuthorization();
+app.UseEndpoints(endpoints => endpoints.MapDefaultControllerRoute());
 app.Run();
